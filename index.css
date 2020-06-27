@@ -1,0 +1,17 @@
+#leftDiv {
+    float: left;
+    margin-left: 15px;
+}
+
+#rightDiv {
+    float: right;
+    margin-right: 15px;
+}
+
+.pane {
+    padding: 20px;
+}
+
+.shortcutReminders {
+    border:1px solid red;
+}

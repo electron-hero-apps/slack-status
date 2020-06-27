@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Electron Hero - Starter App</title>
+    <link rel="stylesheet" href="https://www.electron-hero.com/cdn/photon/photon.min.css">
+    <script src="menu.js"></script>
+    <link rel="stylesheet" href="index.css">
+
+</head>
+
+<script>
+    const ipc = require('electron').ipcRenderer;
+    const slackAPI = require('./slackAPI');
+
+    let nodeRequirePath = ipc.sendSync('getRequirePath') + 'node_modules/';
+    window.$ = window.jQuery = require(nodeRequirePath + 'jquery');
+    const keytar = require(nodeRequirePath + 'keytar');
+    const {
+        ipcRenderer,
+        remote
+    } = require('electron')
+    const {
+        globalShortcut,
+        BrowserWindow
+    } = remote
+    let access_token;
+    globalShortcut.unregisterAll();
+    // const ret = globalShortcut.register('CommandOrControl+X', () => {
+    //   console.log('CommandOrControl+X is pressed')
+    // })
+    //console.log(ret);
+
+    // scopes needed
+    // users.profile.set, users.profile:write
+
+    function setupShortcuts() {
+        slackAPI.setUserToken(access_token)
+
+        function setUserInfo(){}
+
+        var ret = globalShortcut.register('F16', () => {
+            return slackAPI.setPresence('auto')
+                .then((response) => {
+                    slackAPI.setUserStatus(':calendar:', '30 minute meeting')
+                })
+                .catch((error)=> {
+                    console.log(error);
+                    console.log('error');
+                })
+        })
+
+        var ret = globalShortcut.register('F17', () => {
+            return slackAPI.setPresence('auto')
+                .then((response) => {
+                    slackAPI.setUserStatus(':calendar:', '60 minute meeting')
+                })
+                .catch((error)=> {
+                    console.log('error');
+                })
+        })
+        var ret = globalShortcut.register('F18', () => {
+            return slackAPI.setUserStatus(':hamburger:', 'Lunch')
+                .then((response) => {
+                    slackAPI.setPresence('away')
+                })
+                .catch((error)=> {
+                    console.log('error');
+                })
+        })
+        var ret = globalShortcut.register('F19', () => {
+            return slackAPI.setUserStatus('', '')
+                .then((response) => {
+                    slackAPI.setPresence('auto')
+                })
+                .catch((error)=> {
+                    console.log('error');
+                })
+        })
+
+    }
+
+    function openSignInWindow() {
+
+        var authWindow = new BrowserWindow({
+            width: 800,
+            height: 600,
+            show: false,
+            'node-integration': true,
+            'web-security': true
+        });
+        // This is just an example url - follow the guide for whatever service you are using
+        var authUrl = 'https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php'
+
+        authWindow.loadURL(authUrl);
+        authWindow.show();
+        authWindow.webContents.on('will-navigate', function(event, newUrl) {
+            console.log('here in will-navigate')
+            console.log(newUrl);
+            // More complex code to handle tokens goes here
+        });
+
+        authWindow.webContents.on('did-redirect-navigation', function(event, newUrl) {
+            if (newUrl.indexOf('https://www.wrist-view.net/handle_slack_redirect.php') > -1) {
+                authWindow.webContents.executeJavaScript('document.title')
+                    .then((result) => {
+                        var code = result;
+                        $.ajax({
+                            url: "https://slack.com/api/oauth.v2.access?client_id=1180902083079.1201832709284&client_secret=d7c62c0e1fb2679825ef5f3f61ac5f34&code=" + code,
+                            success: function(result) {
+                                console.log("auth results");
+                                console.log(result.authed_user);
+                                console.log(result.team.id);
+                                var slackUserInfo = {
+                                    authed_user: result.authed_user,
+                                    team_id: result.team.id
+                                }
+                                keytar.setPassword('slack-status', 'userInfo', JSON.stringify(slackUserInfo))
+                                authWindow.close();
+                            }
+                        });
+                    })
+            }
+
+        });
+
+        authWindow.on('closed', function() {
+            authWindow = null;
+        });
+
+
+
+
+    }
+</script>
+
+<body>
+
+    <!-- xoxp-1180902083079-1201824595812-1195863293475-dc9d403d6b9e06dff5e524cd44cfbe9f -->
+    <!-- user U015XQ8HHPW -->
+    <!-- team T015ASJ2F2B -->
+
+
+    <div class="window">
+        <div class="window-content">
+            <div class="pane-group">
+                <!-- <div class="pane-sm sidebar"></div> -->
+                <div class="pane">
+                    <!-- <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php"><img src="https://api.slack.com/img/sign_in_with_slack.png" /></a> -->
+                    <img id="signInWithSlack" onclick="openSignInWindow()" src="https://api.slack.com/img/sign_in_with_slack.png" />
+
+                    <div class="shortcutReminders">
+                        <div>F16 - 30 minute meeting</div>
+                        <div>F17 - 60 minute meeting</div>
+                        <div>F18 - Away at lunch</div>
+                        <div>F19 - Clear status and set to Active</div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="toolbar toolbar-footer">
+            <h1 class="title">Footer</h1>
+        </footer>
+    </div>
+
+    <script>
+        keytar.getPassword('slack-status', 'userInfo')
+            .then((_userInfo) => {
+                let userInfo = JSON.parse(_userInfo);
+                if (userInfo.authed_user.access_token) {
+                    console.log('we got it!!!');
+                    $('#signInWithSlack').remove();
+                    access_token = userInfo.authed_user.access_token;
+                    setupShortcuts();
+                }
+            })
+    </script>
+
+</body>
+
+</html>
