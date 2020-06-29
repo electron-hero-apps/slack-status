@@ -15,7 +15,11 @@
 
     let nodeRequirePath = ipc.sendSync('getRequirePath') + 'node_modules/';
     window.$ = window.jQuery = require(nodeRequirePath + 'jquery');
+
     const keytar = require(nodeRequirePath + 'keytar');
+    const _ = require(nodeRequirePath + 'lodash')
+    // const ioHook = require(nodeRequirePath + 'iohook');
+
     const {
         ipcRenderer,
         remote
@@ -34,17 +38,67 @@
     // scopes needed
     // users.profile.set, users.profile:write
 
+
+    function saveShortcuts() {
+        var keyInfo = []
+        var rows = $('table.functionKeysShort tr:not(:first-child)');
+        var rowInfo = {};
+        console.log(rows.length);
+        _.each(rows, function(_row){
+            rowInfo = {};
+            rowInfo.keystroke = $(_row).find('td:nth-child(1)').html();
+            rowInfo.emoticon = $(_row).find('td:nth-child(2)').html();
+            rowInfo.statusText = $(_row).find('td:nth-child(3)').html();
+            rowInfo.notes = $(_row).find('td:nth-child(4)').html();
+            rowInfo.setAway = $(_row).find('td:nth-child(5) input[type="checkbox"]').is(":checked");
+            rowInfo.setActive = $(_row).find('td:nth-child(6) input[type="checkbox"]').is(":checked");
+            keyInfo.push(rowInfo);
+        })
+        localStorage.setItem('slack-status--shortcuts', JSON.stringify(keyInfo))
+    }
+
+    function loadShortcuts() {
+        var rowInfo = {};
+        var _keyInfo = localStorage.getItem('slack-status--shortcuts');
+        var keyInfo = JSON.parse(_keyInfo);
+        console.log(keyInfo);
+        _.each(keyInfo, function(_row, _index){
+            console.log(_index);
+            _row = $('table.functionKeysShort tr:nth-child(' + parseInt(_index+2) + ')');
+
+            $(_row).find('td:nth-child(1)').html(keyInfo[_index].keystroke);
+            $(_row).find('td:nth-child(2)').html(keyInfo[_index].emoticon);
+            $(_row).find('td:nth-child(3)').html(keyInfo[_index].statusText);
+            $(_row).find('td:nth-child(4)').html(keyInfo[_index].notes);
+            $(_row).find('td:nth-child(5) input[type="checkbox"]').prop('checked', keyInfo[_index].setAway);
+            $(_row).find('td:nth-child(6) input[type="checkbox"]').prop('checked', keyInfo[_index].setActive);
+            keyInfo.push(rowInfo);
+        })
+    }
+
+
+
+
+
     function setupShortcuts() {
         slackAPI.setUserToken(access_token)
 
-        function setUserInfo(){}
+        function setUserInfo() {}
+
+        var ret = globalShortcut.register('F15', () => {
+            return slackAPI.setPresence('away')
+                .catch((error) => {
+                    console.log('error');
+                    console.log(error);
+                })
+        })
 
         var ret = globalShortcut.register('F16', () => {
             return slackAPI.setPresence('auto')
                 .then((response) => {
                     slackAPI.setUserStatus(':calendar:', '30 minute meeting')
                 })
-                .catch((error)=> {
+                .catch((error) => {
                     console.log(error);
                     console.log('error');
                 })
@@ -55,7 +109,7 @@
                 .then((response) => {
                     slackAPI.setUserStatus(':calendar:', '60 minute meeting')
                 })
-                .catch((error)=> {
+                .catch((error) => {
                     console.log('error');
                 })
         })
@@ -64,7 +118,7 @@
                 .then((response) => {
                     slackAPI.setPresence('away')
                 })
-                .catch((error)=> {
+                .catch((error) => {
                     console.log('error');
                 })
         })
@@ -73,7 +127,7 @@
                 .then((response) => {
                     slackAPI.setPresence('auto')
                 })
-                .catch((error)=> {
+                .catch((error) => {
                     console.log('error');
                 })
         })
@@ -108,9 +162,6 @@
                         $.ajax({
                             url: "https://slack.com/api/oauth.v2.access?client_id=1180902083079.1201832709284&client_secret=d7c62c0e1fb2679825ef5f3f61ac5f34&code=" + code,
                             success: function(result) {
-                                console.log("auth results");
-                                console.log(result.authed_user);
-                                console.log(result.team.id);
                                 var slackUserInfo = {
                                     authed_user: result.authed_user,
                                     team_id: result.team.id
@@ -150,15 +201,78 @@
                     <img id="signInWithSlack" onclick="openSignInWindow()" src="https://api.slack.com/img/sign_in_with_slack.png" />
 
                     <div class="shortcutReminders">
+                        <div>F15 - Set status away</div>
                         <div>F16 - 30 minute meeting</div>
                         <div>F17 - 60 minute meeting</div>
                         <div>F18 - Away at lunch</div>
                         <div>F19 - Clear status and set to Active</div>
                     </div>
 
+                    <br><br>
+                    <div id="profileOne" class="shortcutReminders">
+                        <table class="functionKeysShort">
+                            <tr>
+                                <th>Keystroke</th>
+                                <th>Emoticon</th>
+                                <th>Status Text</th>
+                                <th>Notes</th>
+                            <th>Set Away</th>
+                                <th>Set Active</th>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true" ></td>
+                                <td><input type="checkbox" ></td>
+                                <td><input type="checkbox" ></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true" ></td>
+                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true" ></td>
+                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true" ></td>
+                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true" ></td>
+                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox"></td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    <button class="btn btn-large btn-positive" onClick="saveShortcuts()">Save Shortcuts</button>
+
+
 
                 </div>
             </div>
+
+
+
+
+
         </div>
         <footer class="toolbar toolbar-footer">
             <h1 class="title">Footer</h1>
@@ -176,6 +290,7 @@
                     setupShortcuts();
                 }
             })
+            loadShortcuts();
     </script>
 
 </body>
