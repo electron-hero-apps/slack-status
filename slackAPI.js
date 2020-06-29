@@ -16,9 +16,13 @@ var slackAPI = (function() {
 		return new Promise((resolve, reject) => {
 			$.ajax(params)
 				.done(function(results) {
+					console.log('ok');
+					console.log(results);
 					resolve(results)
 				})
 				.fail(function(error) {
+					console.log('error');
+					console.log(error);
 					reject(error)
 				})
 		})

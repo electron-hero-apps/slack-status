@@ -1,6 +1,12 @@
+
+
 #leftDiv {
     float: left;
     margin-left: 15px;
+}
+
+.pane {
+    background-color: #eeeeee;
 }
 
 #rightDiv {
@@ -8,18 +14,29 @@
     margin-right: 15px;
 }
 
+table.functionKeysShort tr th {
+    font-weight: bold;
+    background-color: #e9e9e9;
+}
+
+table.functionKeysShort tr td {
+    border-bottom: 1px solid #eee;
+}
+
+
 .pane {
     padding: 20px;
 }
 
 .shortcutReminders {
-    border:1px solid red;
+    border:1px solid #ddd;
 }
 
 .table-striped tr:active:nth-child(even), tr:active {
-    background-color: #ddd
+    background-color: inherit;
+    color: inherit;
 }
 
-.editable {
-    content-editable
+#spacer {
+    height: 20px;
 }

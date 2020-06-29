@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Electron Hero - Starter App</title>
+    <title>Slack Status</title>
     <link rel="stylesheet" href="https://www.electron-hero.com/cdn/photon/photon.min.css">
     <script src="menu.js"></script>
     <link rel="stylesheet" href="index.css">
@@ -44,7 +44,7 @@
         var rows = $('table.functionKeysShort tr:not(:first-child)');
         var rowInfo = {};
         console.log(rows.length);
-        _.each(rows, function(_row){
+        _.each(rows, function(_row) {
             rowInfo = {};
             rowInfo.keystroke = $(_row).find('td:nth-child(1)').html();
             rowInfo.emoticon = $(_row).find('td:nth-child(2)').html();
@@ -55,6 +55,7 @@
             keyInfo.push(rowInfo);
         })
         localStorage.setItem('slack-status--shortcuts', JSON.stringify(keyInfo))
+        alert('Shortcuts saved');
     }
 
     function loadShortcuts() {
@@ -62,9 +63,9 @@
         var _keyInfo = localStorage.getItem('slack-status--shortcuts');
         var keyInfo = JSON.parse(_keyInfo);
         console.log(keyInfo);
-        _.each(keyInfo, function(_row, _index){
+        _.each(keyInfo, function(_row, _index) {
             console.log(_index);
-            _row = $('table.functionKeysShort tr:nth-child(' + parseInt(_index+2) + ')');
+            _row = $('table.functionKeysShort tr:nth-child(' + parseInt(_index + 2) + ')');
 
             $(_row).find('td:nth-child(1)').html(keyInfo[_index].keystroke);
             $(_row).find('td:nth-child(2)').html(keyInfo[_index].emoticon);
@@ -144,7 +145,7 @@
             'web-security': true
         });
         // This is just an example url - follow the guide for whatever service you are using
-        var authUrl = 'https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php'
+        var authUrl = 'https://slack.com/oauth/v2/authorize?user_scope=users:write,users.profile:read,users.profile:write&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php'
 
         authWindow.loadURL(authUrl);
         authWindow.show();
@@ -187,6 +188,10 @@
 
 <body>
 
+
+    <!-- Anexinet -->
+    <!-- xoxp-2523882663-18209195044-1205944839910-792ad3154ba011d91363960c25e41b07 -->
+
     <!-- xoxp-1180902083079-1201824595812-1195863293475-dc9d403d6b9e06dff5e524cd44cfbe9f -->
     <!-- user U015XQ8HHPW -->
     <!-- team T015ASJ2F2B -->
@@ -200,15 +205,14 @@
                     <!-- <a href="https://slack.com/oauth/v2/authorize?user_scope=identity.basic&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php"><img src="https://api.slack.com/img/sign_in_with_slack.png" /></a> -->
                     <img id="signInWithSlack" onclick="openSignInWindow()" src="https://api.slack.com/img/sign_in_with_slack.png" />
 
-                    <div class="shortcutReminders">
+                    <!-- <div class="shortcutReminders">
                         <div>F15 - Set status away</div>
                         <div>F16 - 30 minute meeting</div>
                         <div>F17 - 60 minute meeting</div>
                         <div>F18 - Away at lunch</div>
                         <div>F19 - Clear status and set to Active</div>
-                    </div>
+                    </div> -->
 
-                    <br><br>
                     <div id="profileOne" class="shortcutReminders">
                         <table class="functionKeysShort">
                             <tr>
@@ -216,22 +220,14 @@
                                 <th>Emoticon</th>
                                 <th>Status Text</th>
                                 <th>Notes</th>
-                            <th>Set Away</th>
+                                <th>Set Away</th>
                                 <th>Set Active</th>
                             </tr>
                             <tr>
                                 <td contenteditable="true" class="keystroke"></td>
                                 <td contenteditable="true" class="emoticon"></td>
                                 <td contenteditable="true" class="statusText"></td>
-                                <td contenteditable="true" ></td>
-                                <td><input type="checkbox" ></td>
-                                <td><input type="checkbox" ></td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true" class="keystroke"></td>
-                                <td contenteditable="true" class="emoticon"></td>
-                                <td contenteditable="true" class="statusText"></td>
-                                <td contenteditable="true" ></td>
+                                <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
                                 <td><input type="checkbox"></td>
                             </tr>
@@ -239,7 +235,7 @@
                                 <td contenteditable="true" class="keystroke"></td>
                                 <td contenteditable="true" class="emoticon"></td>
                                 <td contenteditable="true" class="statusText"></td>
-                                <td contenteditable="true" ></td>
+                                <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
                                 <td><input type="checkbox"></td>
                             </tr>
@@ -247,7 +243,7 @@
                                 <td contenteditable="true" class="keystroke"></td>
                                 <td contenteditable="true" class="emoticon"></td>
                                 <td contenteditable="true" class="statusText"></td>
-                                <td contenteditable="true" ></td>
+                                <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
                                 <td><input type="checkbox"></td>
                             </tr>
@@ -255,14 +251,24 @@
                                 <td contenteditable="true" class="keystroke"></td>
                                 <td contenteditable="true" class="emoticon"></td>
                                 <td contenteditable="true" class="statusText"></td>
-                                <td contenteditable="true" ></td>
+                                <td contenteditable="true"></td>
+                                <td><input type="checkbox"></td>
+                                <td><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
                                 <td><input type="checkbox"></td>
                             </tr>
 
                         </table>
                     </div>
-                    <button class="btn btn-large btn-positive" onClick="saveShortcuts()">Save Shortcuts</button>
+                    <div id="spacer">
+                    </div>
+                    <button class="btn btn-large btn-default" onClick="saveShortcuts()">Save Shortcuts</button>
 
 
 
@@ -274,23 +280,26 @@
 
 
         </div>
-        <footer class="toolbar toolbar-footer">
+        <!-- <footer class="toolbar toolbar-footer">
             <h1 class="title">Footer</h1>
-        </footer>
+        </footer> -->
     </div>
 
     <script>
         keytar.getPassword('slack-status', 'userInfo')
             .then((_userInfo) => {
-                let userInfo = JSON.parse(_userInfo);
-                if (userInfo.authed_user.access_token) {
-                    console.log('we got it!!!');
-                    $('#signInWithSlack').remove();
-                    access_token = userInfo.authed_user.access_token;
-                    setupShortcuts();
+                if (_userInfo) {
+                    let userInfo = JSON.parse(_userInfo);
+                    if (userInfo.authed_user.access_token) {
+                        console.log('we got it!!!');
+                        $('#signInWithSlack').remove();
+                        access_token = userInfo.authed_user.access_token;
+                        console.log(access_token);
+                        setupShortcuts();
+                    }
                 }
             })
-            loadShortcuts();
+        loadShortcuts();
     </script>
 
 </body>
