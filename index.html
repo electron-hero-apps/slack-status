@@ -145,7 +145,7 @@
             'web-security': true
         });
         // This is just an example url - follow the guide for whatever service you are using
-        var authUrl = 'https://slack.com/oauth/v2/authorize?user_scope=users:write,users.profile:read,users.profile:write&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php'
+        var authUrl = 'https://slack.com/oauth/v2/authorize?user_scope=users:write,users.profile:read,users.profile:write,search:read,team:read&client_id=1180902083079.1201832709284&redirect_uri=https://www.wrist-view.net/handle_slack_redirect.php'
 
         authWindow.loadURL(authUrl);
         authWindow.show();
