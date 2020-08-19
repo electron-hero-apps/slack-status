@@ -29,7 +29,6 @@ var slackAPI = (function() {
 
 	}
 
-
 	function setUserToken(_token) {
 		token = _token;
 	}
@@ -53,7 +52,6 @@ var slackAPI = (function() {
 		var params = defaultParams;
 		params.url = 'https://slack.com/api/users.profile.set?token' + access_token;
 		params.url += '&profile={"status_emoji":"' + emoticon + '","status_text":"' + statusText + '"}'
-		console.log('right before make http call...user status')
 		return makeHttpCall(params)
 	}
 
