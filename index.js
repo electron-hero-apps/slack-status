@@ -7,8 +7,8 @@ let nodeRequirePath = ipc.sendSync('getRequirePath') + 'node_modules/';
 window.$ = window.jQuery = require(nodeRequirePath + 'jquery');
 
 const keytar = require(nodeRequirePath + 'keytar');
-const _ = require(nodeRequirePath + 'lodash')
-// const ioHook = require(nodeRequirePath + 'iohook');
+const _ = require(nodeRequirePath + 'lodash');
+let keyInfo;
 
 const {
 	ipcRenderer,
@@ -21,12 +21,10 @@ const {
 let access_token;
 globalShortcut.unregisterAll();
 
-
 function saveShortcuts() {
-	var keyInfo = []
+	keyInfo = []
 	var rows = $('table.functionKeysShort tr:not(:first-child)');
 	var rowInfo = {};
-	console.log(rows.length);
 	_.each(rows, function(_row) {
 		rowInfo = {};
 		rowInfo.keystroke = $(_row)
@@ -57,10 +55,9 @@ function saveShortcuts() {
 function loadShortcuts() {
 	var rowInfo = {};
 	var _keyInfo = localStorage.getItem('slack-status--shortcuts');
-	var keyInfo = JSON.parse(_keyInfo);
-	console.log(keyInfo);
+    console.log(_keyInfo);
+	keyInfo = JSON.parse(_keyInfo);
 	_.each(keyInfo, function(_row, _index) {
-		console.log(_index);
 		_row = $('table.functionKeysShort tr:nth-child(' + parseInt(_index + 2) + ')');
 
 		$(_row)
@@ -78,63 +75,84 @@ function loadShortcuts() {
 		$(_row)
 			.find('td:nth-child(5) input[type="checkbox"]')
 			.prop('checked', keyInfo[_index].setAway);
-		$(_row)
-			.find('td:nth-child(6) input[type="checkbox"]')
-			.prop('checked', keyInfo[_index].setActive);
-		keyInfo.push(rowInfo);
+		// $(_row)
+		// 	.find('td:nth-child(6) input[type="checkbox"]')
+		// 	.prop('checked', keyInfo[_index].setActive);
+
+        //keyInfo.push(rowInfo);
 	})
+    setupShortcuts();
+}
+
+
+
+function setupFunctionKey(keyItem) {
+    var ret = globalShortcut.register(keyItem.keystroke, () => {
+        var presence = keyItem.setAway === true ? 'away' : 'auto'
+		return slackAPI.setPresence(presence)
+			.then((response) => {
+				slackAPI.setUserStatus(keyItem.emoticon, keyItem.statusText)
+			})
+			.catch((error) => {
+				console.log(error);
+				console.log('error');
+			})
+	})
+
 }
 
 function setupShortcuts() {
 	slackAPI.setUserToken(access_token)
 
-	var ret = globalShortcut.register('F15', () => {
-		return slackAPI.setPresence('away')
-			.catch((error) => {
-				console.log('error');
-				console.log(error);
-			})
-	})
 
-	var ret = globalShortcut.register('F16', () => {
-		return slackAPI.setPresence('auto')
-			.then((response) => {
-				slackAPI.setUserStatus(':calendar:', '30 minute meeting')
-			})
-			.catch((error) => {
-				console.log(error);
-				console.log('error');
-			})
-	})
+    _.each(keyInfo, setupFunctionKey);
 
-	var ret = globalShortcut.register('F17', () => {
-		return slackAPI.setPresence('auto')
-			.then((response) => {
-				slackAPI.setUserStatus(':calendar:', '60 minute meeting')
-			})
-			.catch((error) => {
-				console.log('error');
-			})
-	})
-	var ret = globalShortcut.register('F18', () => {
-		return slackAPI.setUserStatus(':hamburger:', 'Lunch')
-			.then((response) => {
-				slackAPI.setPresence('away')
-			})
-			.catch((error) => {
-				console.log('error');
-			})
-	})
-	var ret = globalShortcut.register('F19', () => {
-		return slackAPI.setUserStatus('', '')
-			.then((response) => {
-				slackAPI.setPresence('auto')
-			})
-			.catch((error) => {
-				console.log('error');
-			})
-	})
-    loadShortcuts();
+	// var ret = globalShortcut.register('F15', () => {
+	// 	return slackAPI.setPresence('away')
+	// 		.catch((error) => {
+	// 			console.log('error');
+	// 			console.log(error);
+	// 		})
+	// })
+    //
+	// var ret = globalShortcut.register('F16', () => {
+	// 	return slackAPI.setPresence('auto')
+	// 		.then((response) => {
+	// 			slackAPI.setUserStatus(':calendar:', '30 minute meeting')
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log(error);
+	// 			console.log('error');
+	// 		})
+	// })
+    //
+	// var ret = globalShortcut.register('F17', () => {
+	// 	return slackAPI.setPresence('auto')
+	// 		.then((response) => {
+	// 			slackAPI.setUserStatus(':calendar:', '60 minute meeting')
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log('error');
+	// 		})
+	// })
+	// var ret = globalShortcut.register('F18', () => {
+	// 	return slackAPI.setUserStatus(':hamburger:', 'Lunch')
+	// 		.then((response) => {
+	// 			slackAPI.setPresence('away')
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log('error');
+	// 		})
+	// })
+	// var ret = globalShortcut.register('F19', () => {
+	// 	return slackAPI.setUserStatus('', '')
+	// 		.then((response) => {
+	// 			slackAPI.setPresence('auto')
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log('error');
+	// 		})
+	// })
 }
 
 function openSignInWindow() {
@@ -151,11 +169,10 @@ function openSignInWindow() {
 
 	authWindow.loadURL(authUrl);
 	authWindow.show();
-	authWindow.webContents.on('will-navigate', function(event, newUrl) {
-		console.log('here in will-navigate')
-		console.log(newUrl);
-		// More complex code to handle tokens goes here
-	});
+	// authWindow.webContents.on('will-navigate', function(event, newUrl) {
+	// 	console.log('here in will-navigate')
+	// 	console.log(newUrl);
+	// });
 
 	authWindow.webContents.on('did-redirect-navigation', function(event, newUrl) {
 		if (newUrl.indexOf('https://www.wrist-view.net/handle_slack_redirect.php') > -1) {
@@ -195,7 +212,7 @@ function startUp() {
                         .remove();
                     access_token = userInfo.authed_user.access_token;
                     console.log(access_token);
-                    setupShortcuts();
+                    loadShortcuts();
                 }
             }
         })

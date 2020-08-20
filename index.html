@@ -10,31 +10,9 @@
 
     <script>
 
-    // Nodejs encryption with CTR
-    const crypto = require('crypto');
-    const algorithm = 'aes-256-cbc';
-    // const key = crypto.randomBytes(32);
-    // const iv = crypto.randomBytes(16);
-
-    function encrypt(text) {
-        var mykey = crypto.createCipher(algorithm, 'mypassword');
-        var mystr = mykey.update(text, 'utf8', 'hex')
-        mystr += mykey.final('hex');
-        return mystr
-    }
-
-    function decrypt(text) {
-        var mykey = crypto.createDecipher(algorithm, 'mypassword');
-        var mystr = mykey.update(text, 'hex', 'utf8')
-        mystr += mykey.final('utf8');
-        return mystr
-    }
-
-    var hw = encrypt("Some serious stuff")
-    console.log(hw)
-    console.log(decrypt(hw))
-
-
+        var hw = encrypt("Some serious stuff")
+        console.log(hw)
+        console.log(decrypt(hw))
 
     </script>
 
@@ -55,22 +33,12 @@
                                 <th>Status Text</th>
                                 <th>Notes</th>
                                 <th>Set Away</th>
-                                <th>Set Active</th>
                             </tr>
                             <tr>
                                 <td contenteditable="true" class="keystroke"></td>
                                 <td contenteditable="true" class="emoticon"></td>
                                 <td contenteditable="true" class="statusText"></td>
                                 <td contenteditable="true"></td>
-                                <td><input type="checkbox"></td>
-                                <td><input type="checkbox"></td>
-                            </tr>
-                            <tr>
-                                <td contenteditable="true" class="keystroke"></td>
-                                <td contenteditable="true" class="emoticon"></td>
-                                <td contenteditable="true" class="statusText"></td>
-                                <td contenteditable="true"></td>
-                                <td><input type="checkbox"></td>
                                 <td><input type="checkbox"></td>
                             </tr>
                             <tr>
@@ -79,6 +47,12 @@
                                 <td contenteditable="true" class="statusText"></td>
                                 <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
+                            </tr>
+                            <tr>
+                                <td contenteditable="true" class="keystroke"></td>
+                                <td contenteditable="true" class="emoticon"></td>
+                                <td contenteditable="true" class="statusText"></td>
+                                <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
                             </tr>
                             <tr>
@@ -87,7 +61,6 @@
                                 <td contenteditable="true" class="statusText"></td>
                                 <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
-                                <td><input type="checkbox"></td>
                             </tr>
                             <tr>
                                 <td contenteditable="true" class="keystroke"></td>
@@ -95,9 +68,7 @@
                                 <td contenteditable="true" class="statusText"></td>
                                 <td contenteditable="true"></td>
                                 <td><input type="checkbox"></td>
-                                <td><input type="checkbox"></td>
                             </tr>
-
                         </table>
                     </div>
                     <div id="spacer">
