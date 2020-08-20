@@ -55,7 +55,6 @@ function saveShortcuts() {
 function loadShortcuts() {
 	var rowInfo = {};
 	var _keyInfo = localStorage.getItem('slack-status--shortcuts');
-    console.log(_keyInfo);
 	keyInfo = JSON.parse(_keyInfo);
 	_.each(keyInfo, function(_row, _index) {
 		_row = $('table.functionKeysShort tr:nth-child(' + parseInt(_index + 2) + ')');
@@ -103,60 +102,10 @@ function setupFunctionKey(keyItem) {
 
 function setupShortcuts() {
 	slackAPI.setUserToken(access_token)
-
-
     _.each(keyInfo, setupFunctionKey);
-
-	// var ret = globalShortcut.register('F15', () => {
-	// 	return slackAPI.setPresence('away')
-	// 		.catch((error) => {
-	// 			console.log('error');
-	// 			console.log(error);
-	// 		})
-	// })
-    //
-	// var ret = globalShortcut.register('F16', () => {
-	// 	return slackAPI.setPresence('auto')
-	// 		.then((response) => {
-	// 			slackAPI.setUserStatus(':calendar:', '30 minute meeting')
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log(error);
-	// 			console.log('error');
-	// 		})
-	// })
-    //
-	// var ret = globalShortcut.register('F17', () => {
-	// 	return slackAPI.setPresence('auto')
-	// 		.then((response) => {
-	// 			slackAPI.setUserStatus(':calendar:', '60 minute meeting')
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log('error');
-	// 		})
-	// })
-	// var ret = globalShortcut.register('F18', () => {
-	// 	return slackAPI.setUserStatus(':hamburger:', 'Lunch')
-	// 		.then((response) => {
-	// 			slackAPI.setPresence('away')
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log('error');
-	// 		})
-	// })
-	// var ret = globalShortcut.register('F19', () => {
-	// 	return slackAPI.setUserStatus('', '')
-	// 		.then((response) => {
-	// 			slackAPI.setPresence('auto')
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log('error');
-	// 		})
-	// })
 }
 
 function openSignInWindow() {
-
 	var authWindow = new BrowserWindow({
 		width: 800,
 		height: 600,
@@ -169,11 +118,6 @@ function openSignInWindow() {
 
 	authWindow.loadURL(authUrl);
 	authWindow.show();
-	// authWindow.webContents.on('will-navigate', function(event, newUrl) {
-	// 	console.log('here in will-navigate')
-	// 	console.log(newUrl);
-	// });
-
 	authWindow.webContents.on('did-redirect-navigation', function(event, newUrl) {
 		if (newUrl.indexOf('https://www.wrist-view.net/handle_slack_redirect.php') > -1) {
 			authWindow.webContents.executeJavaScript('document.title')
